@@ -1,4 +1,3 @@
-
 export interface ApiResponse<T> {
   success: boolean;
   data: T;
@@ -27,6 +26,7 @@ export interface PaginationParams {
 export interface LoginPayload {
   email: string;
   password: string;
+  is_web?: boolean;
 }
 
 export interface User {
@@ -62,22 +62,12 @@ export interface ProductRes {
   updated_id: string;
   image: string;
   is_deleted: boolean;
-  status: 'sale',
-  colors: [
-    '#00AB55',
-    '#000000',
-    '#FFFFFF',
-    '#FFC0CB',
-    '#FF4842',
-    '#1890FF',
-    '#94D82D',
-    '#FFC107',
-  ],
+  status: 'sale';
+  colors: ['#00AB55', '#000000', '#FFFFFF', '#FFC0CB', '#FF4842', '#1890FF', '#94D82D', '#FFC107'];
 }
 
-
 export interface ProductResponse {
-  data: ProductRes[],
+  data: ProductRes[];
 }
 
 export interface CategoryRes {
@@ -91,10 +81,9 @@ export interface CategoryRes {
   is_deleted: boolean;
 }
 
-
 // ======================================================================
 // Inventory - Warehouse
-export interface InventoryWarehouseResponse { 
+export interface InventoryWarehouseResponse {
   id: string;
   name: string;
   location: string;
@@ -108,5 +97,3 @@ export interface InventoryWarehouseResponse {
   asc: string;
   dsc: string;
 }
-
-  

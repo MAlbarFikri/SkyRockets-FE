@@ -23,7 +23,6 @@ import { authService } from 'src/services/authService';
 
 import { Iconify } from 'src/components/iconify';
 
-
 export function SignInView() {
   const navigate = useNavigate();
 
@@ -33,6 +32,7 @@ export function SignInView() {
   const [data, setData] = useState({
     email: '',
     password: '',
+    is_web: true,
   });
 
   const [isPending, startTransition] = useTransition();
@@ -45,33 +45,41 @@ export function SignInView() {
     } else {
       startTransition(() => {
         hitLoginApi();
-      })
+      });
     }
   };
 
   const hitLoginApi = async () => {
-    const payload: LoginPayload = { email, password };
+    const payload: LoginPayload = { email, password, is_web: true };
 
-    authService.login(payload).then(res =>  {
-      const { data: { accessToken } } = res;
-      // Save token
-      toast.success(strings.successLogin);
-      setLocalStorage(configuration.localStorage, accessToken);
-    }).then(() => {
-      authService.getUser().then(res => {
-        const response = res?.data as any;
-        setUserData(response);
-        setSelectedCompany(response?.config_account[0])
-        navigate('/dashboard');
-      });
-    }).catch((err) => {
+    authService
+      .login(payload)
+      .then((res) => {
+        const {
+          data: { accessToken },
+        } = res;
+        // Save token
+        toast.success(strings.successLogin);
+        setLocalStorage(configuration.localStorage, accessToken);
+      })
+      .then(() => {
+        authService.getUser().then((res) => {
+          const response = res?.data as any;
+          setUserData(response);
+          setSelectedCompany(response?.config_account[0]);
+          navigate('/dashboard');
+        });
+      })
+      .catch((err) => {
         // if failed remove token to prevent double login
         const errMessage = err?.response?.data?.message;
-        if(errMessage === 'Double Login!') toast.error(`Your account has login already in another browser.`);
-        else if (errMessage === 'Invalid credentials') toast.error('Email or Password does not match')
+        if (errMessage === 'Double Login!')
+          toast.error(`Your account has login already in another browser.`);
+        else if (errMessage === 'Invalid credentials')
+          toast.error('Email or Password does not match');
         else toast.error(errMessage);
-    });
-  }
+      });
+  };
 
   const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = evt.target;
@@ -142,12 +150,11 @@ export function SignInView() {
 
   return (
     <>
-     <Box gap={1.5} display="flex" flexDirection="column" alignItems="center" sx={{ mb: 5 }}>
+      <Box gap={1.5} display="flex" flexDirection="column" alignItems="center" sx={{ mb: 5 }}>
         <Typography variant="h5">Sign in</Typography>
       </Box>
 
       {renderForm}
-
 
       {/* <Divider sx={{ my: 3, '&::before, &::after': { borderTopStyle: 'dashed' } }}>
         <Typography
